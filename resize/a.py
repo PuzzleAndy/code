@@ -7,51 +7,54 @@
 import cv2
 import numpy as np
 
-def resize(img, scale, interp=None):
-	return cv2.resize(img, None, fx=scale, fy=scale, interpolation=interp)
+def resize(img, w, h, interp=None):
+	return cv2.resize(img, (w, h), interpolation=interp)
+
+def resize_factor(img, factor, interp=None):
+	return cv2.resize(img, None, fx=factor, fy=factor, interpolation=interp)
 
 def resize_width(img, w, interp=None):
-	scale = w / img.shape[1]
-	return resize(img, scale, interp)
+	factor = w / img.shape[1]
+	return resize(img, factor, interp)
 
 def resize_height(img, h, interp=None):
-	scale = h / img.shape[0]
-	return resize(img, scale, interp)
+	factor = h / img.shape[0]
+	return resize(img, factor, interp)
 
 def resize_max_width(img, w, interp=None):
-	scale = w / img.shape[1]
-	if scale < 1:
-		return resize(img, scale, interp)
+	factor = w / img.shape[1]
+	if factor < 1:
+		return resize(img, factor, interp)
 	return img
 
 def resize_max_height(img, h, interp=None):
-	scale = h / img.shape[0]
-	if scale < 1:
-		return resize(img, scale, interp)
+	factor = h / img.shape[0]
+	if factor < 1:
+		return resize(img, factor, interp)
 	return img
 
 def resize_min_width(img, w, interp=None):
-	scale = w / img.shape[1]
-	if scale > 1:
-		return resize(img, scale, interp)
+	factor = w / img.shape[1]
+	if factor > 1:
+		return resize(img, factor, interp)
 	return img
 
 def resize_min_height(img, h, interp=None):
-	scale = h / img.shape[0]
-	if scale > 1:
-		return resize(img, scale, interp)
+	factor = h / img.shape[0]
+	if factor > 1:
+		return resize(img, factor, interp)
 	return img
 
 def resize_min(img, w, h, interp=None):
-	scale = np.array([w / img.shape[1], h / img.shape[0]])
-	mini = min(scale[0], scale[1])
+	factor = np.array([w / img.shape[1], h / img.shape[0]])
+	mini = min(factor[0], factor[1])
 	if mini < 1:
 		return resize(img, mini, interp)
 	return img
 
 def resize_max(img, w, h, interp=None):
-	scale = np.array([w / img.shape[1], h / img.shape[0]])
-	maxi = max(scale[0], scale[1])
+	factor = np.array([w / img.shape[1], h / img.shape[0]])
+	maxi = max(factor[0], factor[1])
 	if maxi > 1:
 		return resize(img, maxi, interp)
 	return img

@@ -1,11 +1,16 @@
 # License: CC0
 # https://puzzleandy.com
 
+# pip install numpy
+# pip install opencv-python
+# pip install pillow
+# pip install Wand
+
+from itertools import combinations
+import numpy as np
 import cv2
 import PIL.Image
-import numpy as np
 import wand.image
-from itertools import combinations
 
 # OpenCV
 arr_in_1 = cv2.imread('a.jpg') 

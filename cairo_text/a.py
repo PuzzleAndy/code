@@ -1,3 +1,8 @@
+# License: CC0
+# https://puzzleandy.com
+
+# pip install pycairo
+
 import cairo 
 
 wnd_w = 700

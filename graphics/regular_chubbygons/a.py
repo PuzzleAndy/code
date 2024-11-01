@@ -2,6 +2,9 @@ import cairo
 import math
 import numpy as np
 
+def is_even(n):
+	return n % 2 == 0
+
 # Image dimensions
 w = 500
 h = 500
@@ -38,7 +41,7 @@ with cairo.ImageSurface(cairo.FORMAT_RGB24, 500, 500) as sfc:
 
 	# Initial and final angles of the circular arc
 	start = end = None
-	if n % 2 == 0:
+	if is_even(n):
 		start = math.pi + alpha - gamma
 		end = math.pi + alpha + gamma
 	else:
@@ -51,7 +54,7 @@ with cairo.ImageSurface(cairo.FORMAT_RGB24, 500, 500) as sfc:
 
 		# Center of the circular arc
 		c2 = np.empty(2)
-		if n % 2 == 0:
+		if is_even(n):
 			c2[0] = c[0] + d * math.cos(delta + alpha)
 			c2[1] = c[1] + d * math.sin(delta + alpha)
 		else:

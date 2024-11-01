@@ -1,3 +1,9 @@
+# License: CC0
+# https://puzzleandy.com
+
+# pip install matplotlib
+# pip install numpy
+
 import math
 from matplotlib import pyplot as plt
 import numpy as np

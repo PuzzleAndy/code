@@ -23,7 +23,7 @@ class AlphaStop:
 
 col_stops = [
 	ColStop(0, np.array([0, 0, 0])),
-	ColStop(0.22, np.array([39 / 255, 24 / 255, 8 / 255])),
+	ColStop(0.5, np.array([134 / 255, 122 / 255, 101 / 255])),
 	ColStop(1, np.array([1, 1, 1])),
 ]
 col_mids = [0.5, 0.5]
@@ -94,3 +94,7 @@ cv2.imwrite('flowers_sepia.jpg', img_out)
 img_in = cv2.imread('jellyfish.jpg', cv2.IMREAD_GRAYSCALE)
 img_out = gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, img_in) 
 cv2.imwrite('jellyfish_sepia.jpg', img_out)
+
+img_in = cv2.imread('woman.jpg', cv2.IMREAD_GRAYSCALE)
+img_out = gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, img_in) 
+cv2.imwrite('woman_sepia.jpg', img_out)

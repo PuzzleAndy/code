@@ -2,9 +2,11 @@
 # https://puzzleandy.com
 
 # pip install numpy
+# pip install opencv-python
 
 import math
 import numpy as np
+import cv2
 
 def lerp(a, b, t):
 	return (1 - t) * a + t * b
@@ -21,16 +23,18 @@ class AlphaStop:
 
 col_stops = [
 	ColStop(0, np.array([0, 0, 0])),
+	ColStop(0.22, np.array([39 / 255, 24 / 255, 8 / 255])),
 	ColStop(1, np.array([1, 1, 1])),
 ]
-col_mids = [0.25]
+col_mids = [0.5, 0.5]
 alpha_stops = [
 	AlphaStop(0, 1),
 	AlphaStop(1, 1)
 ]
 alpha_mids = [0.5]
 
-def gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc):
+loc = 0.25
+def gradient_map_pixel(col_stops, col_mids, alpha_stops, alpha_mids, loc):
 	col = None
 	alpha = None
 
@@ -69,5 +73,24 @@ def gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc):
 					break
 	return np.array([col[0], col[1], col[2], alpha])
 
-loc = 0.25
-print(gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc))
+def rgba2bgra(img):
+	return cv2.cvtColor(img, cv2.COLOR_RGBA2BGRA)
+
+def gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, img):
+	img_out_shape = (img.shape[0], img.shape[1], 4)
+	img_out = np.empty(img_out_shape, dtype=img.dtype)
+	for i in range(0, img.shape[0]):
+		for j in range(0, img.shape[1]):
+			loc = img[i, j] / 255
+			col = gradient_map_pixel(col_stops, col_mids, alpha_stops, alpha_mids, loc)
+			img_out[i, j] = col * 255
+	img_out = rgba2bgra(img_out)
+	return img_out
+
+img_in = cv2.imread('flowers.jpg', cv2.IMREAD_GRAYSCALE)
+img_out = gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, img_in) 
+cv2.imwrite('flowers_sepia.jpg', img_out)
+
+img_in = cv2.imread('jellyfish.jpg', cv2.IMREAD_GRAYSCALE)
+img_out = gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, img_in) 
+cv2.imwrite('jellyfish_sepia.jpg', img_out)

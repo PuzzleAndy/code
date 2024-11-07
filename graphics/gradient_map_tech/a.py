@@ -30,7 +30,7 @@ alpha_stops = [
 ]
 alpha_mids = [0.5]
 
-def gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc):
+def gradient_map_pixel(col_stops, col_mids, alpha_stops, alpha_mids, loc):
 	col = None
 	alpha = None
 
@@ -70,4 +70,4 @@ def gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc):
 	return np.array([col[0], col[1], col[2], alpha])
 
 loc = 0.25
-print(gradient_map(col_stops, col_mids, alpha_stops, alpha_mids, loc))
+print(gradient_map_pixel(col_stops, col_mids, alpha_stops, alpha_mids, loc))

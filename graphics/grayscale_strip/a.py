@@ -30,10 +30,9 @@ def hue2rgb(H):
 
 img = np.empty((h, w, 3), np.uint8)
 for i in range(0, w):
-	H = (i / (w - 1) * 360) % 360
-	R, G, B = hue2rgb(H)
-	R, G, B = R * 255, G * 255, B * 255
+	L = i / (w - 1)
+	L *= 255
 	for j in range(0, h):
-		img[j, i] = (B, G, R)
-cv2.imwrite('hue_strip.jpg', img)
+		img[j, i] = (L, L, L)
+cv2.imwrite('grayscale_strip.jpg', img)
 		

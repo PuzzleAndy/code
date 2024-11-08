@@ -23,7 +23,7 @@ def smootherstep(x, edge0=0, edge1=1):
 	x = clamp((x - edge0) / (edge1 - edge0))
 	return x * x * x * (x * (6 * x - 15) + 10)
 
-def gen_smoothstep(N, x):
+def general_smoothstep(N, x):
   x = clamp(x, 0, 1)
   res = 0
   for n in range(0, N + 1):
@@ -60,7 +60,7 @@ plt.savefig('smootherstep.png')
 N = 5
 y = np.empty(len(x))
 for i in range(0, len(x)):
-	y[i] = gen_smoothstep(N, x[i])
+	y[i] = general_smoothstep(N, x[i])
 plt.clf()
 plt.plot(x, y, color='red')
-plt.savefig('gen_smoothstep.png')
+plt.savefig('general_smoothstep.png')

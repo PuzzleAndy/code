@@ -61,6 +61,7 @@ for i in range(0, img_in.shape[0]):
 		G = img_in[i, j, 1] / 255
 		B = img_in[i, j, 0] / 255
 		H, SL, L = rgb2hsl(R, G, B)
+		L = sigmoid(k, L)
 		R, G, B = hsl2rgb(H, SL, L)
 		img_out[i, j] = (B * 255, G * 255, R * 255)
 cv2.imwrite('out.jpg', img_out)

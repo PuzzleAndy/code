@@ -53,15 +53,15 @@ def sigmoid(k, x):
 	return 1 / (1 + math.pow(1/x - 1, k))
 
 k = 1.35
-img_in = cv2.imread('sailboat.jpg')
+img_in = cv2.imread('cat.png')
 img_out = np.empty(img_in.shape, img_in.dtype)
 for i in range(0, img_in.shape[0]):
 	for j in range(0, img_in.shape[1]):
 		R = img_in[i, j, 2] / 255
 		G = img_in[i, j, 1] / 255
 		B = img_in[i, j, 0] / 255
-		H, SL, L = rgb2hsl(R, G, B)
-		L = sigmoid(k, L)
-		R, G, B = hsl2rgb(H, SL, L)
+		R = sigmoid(k, R)
+		G = sigmoid(k, G)
+		B = sigmoid(k, B)
 		img_out[i, j] = (B * 255, G * 255, R * 255)
-cv2.imwrite('out.jpg', img_out)
+cv2.imwrite('out.png', img_out)

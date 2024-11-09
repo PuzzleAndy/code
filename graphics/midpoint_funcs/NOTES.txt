@@ -1,0 +1,21 @@
+(0, 0) (1, 1) (u, v)
+
+setup system of equations
+
+0 = a*0^2 + b*0 + c
+0 = c
+
+1 = a*1^2 + b*1
+1 = a + b
+a = b - 1
+
+v = au^2 + (1 - a)u
+
+solve for a
+
+a = (u - v)/(u - u^2)
+
+vertex
+
+h = -(1 - a)/2a
+v = ah^2 + (1 - a)h

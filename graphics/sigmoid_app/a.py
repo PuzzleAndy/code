@@ -46,13 +46,19 @@ def rgb2hsl(R, G, B):
 		SL = C / (1 - abs(2 * V - C - 1))
 	return H, SL, L
 
-# k > 0
-def sigmoid(k, x):
-	if x == 0:
-		return 0
-	return 1 / (1 + math.pow(1/x - 1, k))
+def sigmoid(x, a, b, c, d):
+	s = ((1 - d) - b) / ((1 - c) - a)
+	if 0 <= x and x < a:
+		p = (s * a) / b
+		return b * math.pow(x * (1 / a), p)
+	elif 1 - c < x and x <= 1:
+		q = (s * c) / d
+		return -d * math.pow(-(x - 1) * (1 / c), q) + 1
+	else:
+		return s * (x - a) + b
 
-k = 1.35
+a, b = 0.25, 0.2
+c, d = 0.25, 0.2
 img_in = cv2.imread('cat.png')
 img_out = np.empty(img_in.shape, img_in.dtype)
 for i in range(0, img_in.shape[0]):
@@ -60,8 +66,8 @@ for i in range(0, img_in.shape[0]):
 		R = img_in[i, j, 2] / 255
 		G = img_in[i, j, 1] / 255
 		B = img_in[i, j, 0] / 255
-		R = sigmoid(k, R)
-		G = sigmoid(k, G)
-		B = sigmoid(k, B)
+		R = sigmoid(R, a, b, c, d)
+		G = sigmoid(G, a, b, c, d)
+		B = sigmoid(B, a, b, c, d)
 		img_out[i, j] = (B * 255, G * 255, R * 255)
 cv2.imwrite('out.png', img_out)

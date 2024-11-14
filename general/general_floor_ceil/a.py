@@ -1,3 +1,9 @@
+# License: CC0
+# https://puzzleandy.com
+
+# pip install numpy
+# pip install matplotlib
+
 import math
 from matplotlib import pyplot as plt
 import numpy as np
@@ -91,22 +97,32 @@ def inc_int_ceil(f, x):
 			prev = y
 			i -= 1
 
+def pow2_floor(x):
+	return inc_nat_floor(pow2, x)
+
 def pow2_ceil(x):
 	return inc_nat_ceil(pow2, x)
 
 def odd_floor(x):
 	return inc_int_floor(odd, x)
 
-x = np.linspace(0, 16, 100)
+def odd_ceil(x):
+	return inc_int_ceil(odd, x)
 
-y = np.vectorize(pow2_ceil, otypes=[float])(x)
+x = np.linspace(0, 16, 100)
+y1 = np.vectorize(pow2_ceil, otypes=[float])(x)
+y2 = np.vectorize(pow2_floor, otypes=[float])(x)
 plt.clf()
-plt.plot(x, y, color='red')
-plt.savefig('pow2_ceil.png')
+plt.plot(x, y1, color='red', label='ceil')
+plt.plot(x, y2, color='blue', label='floor')
+plt.legend(loc='best')
+plt.savefig('pow2.png')
 
 x = np.linspace(-5, 5, 100)
-
-y = np.vectorize(odd_floor, otypes=[float])(x)
+y1 = np.vectorize(odd_ceil, otypes=[float])(x)
+y2 = np.vectorize(odd_floor, otypes=[float])(x)
 plt.clf()
-plt.plot(x, y, color='red')
-plt.savefig('odd_floor.png')
+plt.plot(x, y1, color='red', label='ceil')
+plt.plot(x, y2, color='blue', label='floor')
+plt.legend(loc='best')
+plt.savefig('odd.png')

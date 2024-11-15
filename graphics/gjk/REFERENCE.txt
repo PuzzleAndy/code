@@ -1,0 +1,2 @@
+https://blog.hamaluik.ca/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/
+https://stackoverflow.com/a/72801371

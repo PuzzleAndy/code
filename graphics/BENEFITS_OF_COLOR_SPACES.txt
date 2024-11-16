@@ -1,0 +1,15 @@
+RGB - Available everywhere. Easy to memorize the coordinates for simple colors like green.
+
+Oklab - Better linear gradients. Conversion to black and white.
+
+HSB - Makes it easy to generate tints and shades from a fixed hue and saturation.
+
+HSV - Necessary for many algorithms.
+
+XYZ - Necessary to convert to CIELAB.
+
+CIELAB - Color distance formulas.
+
+YUV - Very fast luminance computation for converting color images to grayscale. Not as good as CIELAB but much much faster.
+
+https://www.learnui.design/blog/the-hsb-color-system-practicioners-primer.html

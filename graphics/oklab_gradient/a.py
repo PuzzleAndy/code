@@ -71,8 +71,51 @@ def oklab_to_srgb(L, a, b):
 def lerp(a, b, t):
 	return (1 - t) * a + t * b
 
-left_sRGB = np.array([0.7, 0.9, 1], np.float32)
-right_sRGB = np.array([0, 0, 0], np.float32)
+def hsv2rgb(H, SV, V):
+	C = V * SV
+	Hp = H / 60
+	X = C * (1 - abs(Hp % 2 - 1))
+	if 0 <= Hp < 1:
+		R1, G1, B1 = C, X, 0
+	elif 1 <= Hp < 2:
+		R1, G1, B1 = X, C, 0
+	elif 2 <= Hp < 3:
+		R1, G1, B1 = 0, C, X
+	elif 3 <= Hp < 4:
+		R1, G1, B1 = 0, X, C
+	elif 4 <= Hp < 5:
+		R1, G1, B1 = X, 0, C
+	elif 5 <= Hp < 6:
+		R1, G1, B1 = C, 0, X
+	m = V - C
+	R, G, B = R1 + m, G1 + m, B1 + m
+	return R, G, B
+
+def rgb2hsv(R, G, B):
+	Xmax = V = max(R, G, B)
+	Xmin = min(R, G, B)
+	C = Xmax - Xmin
+	if C == 0:
+		H = 0
+	elif V == R:
+		H = 60 * ((G - B) / C % 6)
+	elif V == G:
+		H = 60 * ((B - R) / C + 2)
+	elif V == B:
+		H = 60 * ((R - G) / C + 4)
+	if V == 0:
+		SV = 0
+	else:
+		SV = C / V
+	return H, SV, V
+
+left_sRGB = np.array([1, 1, 1], np.float32)
+right_sRGB = np.array([0, 0, 1], np.float32)
+H, S, V = rgb2hsv(*left_sRGB)
+left_HSV = np.array([H, S, V], np.float32)
+H, S, V = rgb2hsv(*right_sRGB)
+right_HSV = np.array([H, S, V], np.float32)
+left_HSV[0] = right_HSV[0]
 L, a, b = srgb_to_oklab(*left_sRGB)
 left_Oklab = np.array([L, a, b], np.float32)
 L, a, b = srgb_to_oklab(*right_sRGB)
@@ -85,7 +128,8 @@ img = np.empty((h, w, 3), np.float32)
 for i in range(0, w):
 	t = i / (w - 1)
 	for j in range(0, math.floor(h / 2)):
-		img[j, i] = lerp(left_sRGB, right_sRGB, t)
+		HSV = lerp(left_HSV, right_HSV, t)
+		img[j, i] = hsv2rgb(left_HSV[0], HSV[1], HSV[2])
 	for j in range(math.ceil(h / 2), h):
 		Oklab = lerp(left_Oklab, right_Oklab, t)
 		img[j, i] = oklab_to_srgb(*Oklab)

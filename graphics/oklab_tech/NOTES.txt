@@ -1,2 +1,2 @@
 https://bottosson.github.io/posts/oklab/#converting-from-linear-srgb-to-oklab
-https://facelessuser.github.io/coloraide/images/oklab-3d.png
+https://en.wikipedia.org/wiki/Oklab_color_space#Color_differences

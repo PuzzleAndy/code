@@ -31,7 +31,7 @@ def srgb_to_oklab_lum(sR, sG, sB):
 	R, G, B = srgb_to_rgb(sR, sG, sB)
 	return rgb_to_oklab_lum(R, G, B)
 
-img_in = cv2.imread('woman.jpg')
+img_in = cv2.imread('horses.jpg')
 img_in = cv2.cvtColor(img_in, cv2.COLOR_BGR2RGB)
 img_in = img_in.astype(np.float32) / 255
 img_out = np.empty(img_in.shape, np.float32)

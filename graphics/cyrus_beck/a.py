@@ -36,13 +36,14 @@ def clip(P1, P2, V):
 			if den < 0:
 				if t <= 1:
 					t1 = max(t, t1)
+					if t1 > t2:
+						return None, None
 			# Else exiting
 			else:
 				if t >= 0:
 					t2 = min(t, t2)
-
-	if t1 > t2:
-		return None, None
+					if t1 > t2:
+						return None, None
 
 	P3 = P1 + t1 * (P2 - P1)
 	P4 = P1 + t2 * (P2 - P1)

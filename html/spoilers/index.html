@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Whatever</title>
+<script
+src="https://code.jquery.com/jquery-3.7.1.min.js"
+integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+crossorigin="anonymous">
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<style>
+html, body
+{
+	height: 100%;
+}
+
+body
+{
+	background-color: rgb(49, 51, 56);
+	color: rgb(206, 209, 211);
+	font-family: 'Open Sans';
+	font-size: 14pt;
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+.center
+{
+	text-align: center;
+	font-weight: 500;
+}
+
+.spoiler
+{
+	color: rgba(0, 0, 0, 0);
+	background-color: rgb(30, 31, 34);
+	user-select: none;
+	border-radius: 5px;
+	box-decoration-break: clone;
+}
+</style>
+<script>
+
+$(function() {
+	$('.spoiler').click(function() {
+		$(this).removeClass('spoiler');
+	});
+});
+
+</script>
+</head>
+<body>
+<h1 class=center>Loose Change</h1>
+
+<p>Problem: Using only pennies, nickels, dimes, and at least one of each coin, choose 21 coins with a total value of $1.</p>
+
+<p>Solution: <span class=spoiler>20 nickels would make $1. Exchanging 1 nickel for 5 pennies adds 4 coins. Exchanging 2 nickels for 1 dime removes 1 coin. We need to add 1 coin to go from 20 to 21, so we can add 4 coins and remove 3. This translates to adding 5 pennies and 3 dimes, while reducing the number of nickels by 7. After making the exchanges, we have 5 pennies, 3 dimes, 13 nickels.</span></p>
+</body>
+</html>

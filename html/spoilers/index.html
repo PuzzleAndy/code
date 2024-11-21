@@ -13,7 +13,7 @@ crossorigin="anonymous">
 <style>
 html, body
 {
-	height: 100%;
+	min-height: 100%;
 }
 
 body
@@ -22,17 +22,25 @@ body
 	color: rgb(206, 209, 211);
 	font-family: 'Open Sans';
 	font-size: 14pt;
-	max-width: 700px;
+	padding-bottom: 50px;
+	max-width: 500px;
 	margin: 0 auto;
 }
 
-.center
+h1
 {
 	text-align: center;
 	font-weight: 500;
 }
 
-.spoiler
+div.spoiler p
+{
+	width: max-content;
+}
+
+span.spoiler,
+div.spoiler span,
+div.spoiler p
 {
 	color: rgba(0, 0, 0, 0);
 	background-color: rgb(30, 31, 34);
@@ -40,11 +48,48 @@ body
 	border-radius: 5px;
 	box-decoration-break: clone;
 }
+
+div.spoiler:has(> img),
+div.spoiler div:has(> img)
+{
+	font-size: 0;
+	display: block;
+	margin-inline: auto;
+	width: max-content;
+	position: relative;
+}
+
+div.spoiler:has(> img)::after,
+div.spoiler div:has(> img)::after
+{
+	font-size: 0;
+	content: '';
+	position: absolute;
+	display: inline-block;
+	left: -1px;
+	top: -1px;
+	background-color: rgb(30, 31, 34);
+	border: 1px solid rgb(30, 31, 34);
+	border-radius: 5px;
+	width: 100%;
+	height: 100%;
+}
+
+img
+{
+	border-radius: 5px;
+	display: block;
+	margin: 0 auto;
+}
 </style>
 <script>
 
 $(function() {
-	$('.spoiler').click(function() {
+	$('span.spoiler').click(function() {
+		$(this).removeClass('spoiler');
+	});
+
+	$('div.spoiler').click(function() {
 		$(this).removeClass('spoiler');
 	});
 });
@@ -57,5 +102,24 @@ $(function() {
 <p>Problem: Using only pennies, nickels, dimes, and at least one of each coin, choose 21 coins with a total value of $1.</p>
 
 <p>Solution: <span class=spoiler>20 nickels would make $1. Exchanging 1 nickel for 5 pennies adds 4 coins. Exchanging 2 nickels for 1 dime removes 1 coin. We need to add 1 coin to go from 20 to 21, so we can add 4 coins and remove 3. This translates to adding 5 pennies and 3 dimes, while reducing the number of nickels by 7. After making the exchanges, we have 5 pennies, 3 dimes, 13 nickels.</span></p>
+
+<h1>Algebra Rectangles</h1>
+
+<p>Problem:</p>
+
+<img width=375 src=1.jpg>
+
+<p>Solution:</p>
+<div class=spoiler>
+<img width=375 src=2.jpg>
+</div>
+
+<h1>???</h1>
+
+<div class=spoiler>
+<div><img width=375 src=2.jpg></div>
+<p>This is cool!</p>
+</div>
+
 </body>
 </html>

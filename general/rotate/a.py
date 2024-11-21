@@ -1,25 +1,21 @@
 import numpy as np
 
-def rot(x, y):
-	xp = x * math.cos(theta) - y * math.sin(theta)
-	yp = x * math.sin(theta) + y * math.cos(theta)
-	return xp, yp
+def rot(v):
+	return np.array([
+		v[0] * math.cos(theta) - v[1] * math.sin(theta),
+		v[0] * math.sin(theta) + v[1] * math.cos(theta)
+	], v.dtype)
 
-def rot90(x, y):
-	xp = -y
-	yp = x
-	return xp, yp
+def rot90(v):
+	return np.array([-v[1], v[0]], v.dtype)
 
-def rot180(x, y):
-	xp = -x
-	yp = -y
-	return xp, yp
+def rot180(v):
+	return np.array([-v[0], -v[1]], v.dtype)
 
-def rot270(x, y):
-	xp = y
-	yp = -x
-	return xp, yp
+def rot270(v):
+	return np.array([v[1], -v[0]], v.dtype)
 
-print(rot90(2, 1))
-print(rot180(2, 1))
-print(rot270(2, 1))
+v = np.array([2, 1], np.float32)
+print(rot90(v))
+print(rot180(v))
+print(rot270(v))

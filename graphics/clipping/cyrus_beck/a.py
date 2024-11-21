@@ -5,9 +5,10 @@
 
 import numpy as np
 
-def rot270(a):
-	return np.array([a[1], -a[0]], np.float32)
+def rot270(v):
+	return np.array([v[1], -v[0]], v.dtype)
 
+# Cyrus-Beck
 def clip(P1, P2, V):
 
 	t1 = 0

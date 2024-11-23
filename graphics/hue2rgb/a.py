@@ -5,8 +5,11 @@
 # pip install numpy
 
 import math
-import pygame
+import pyglet
 import numpy as np
+import ctypes
+
+ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 def hue2rgb(H):
 	C = 1
@@ -27,17 +30,15 @@ def hue2rgb(H):
 		R, G, B = 1, 0, X
 	return R, G, B
 
-pygame.init()
-screen = pygame.display.set_mode((200, 200))
 H = 0
-clock = pygame.time.Clock()
-while True:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			raise SystemExit
-	rgb = hue2rgb(H)
-	screen.fill(list(np.array(rgb) * 255))
-	pygame.display.flip()
+wnd = pyglet.window.Window(500, 500)
+
+@wnd.event
+def on_draw():
+	global H
+	RGB = hue2rgb(H)
+	pyglet.gl.glClearColor(RGB[0], RGB[1], RGB[2],1)
 	H = (H + 0.85) % 360
-	clock.tick(60)
+	wnd.clear()
+
+pyglet.app.run()

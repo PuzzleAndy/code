@@ -12,20 +12,33 @@ right = np.array([1, 0], np.float32)
 up = np.array([0, 1], np.float32)
 down = np.array([0, -1], np.float32)
 
-class Line:
+# shapes
 
-	def __init__(self, x1, y1, x2, y2):
-		self.p1 = np.array([x1, y1], np.float32)
-		self.p2 = np.array([x2, y2], np.float32)
+class Circ:
 
-	def is_hor(self):
-		return self.p1[1] == self.p2[1]
+	def __init__(self, cx, cy, r):
+		self.c = np.array([cx, cy], np.float32)
+		self.r = r
+
+class HorLine:
+
+	def __init__(self, cx, cy, hx):
+		self.c = np.array([cx, cy], np.float32)
+		self.hx = hx
+
+class VertLine:
+
+	def __init__(self, cx, cy, hy):
+		self.c = np.array([cx, cy], np.float32)
+		self.hy = hy
 
 class Rect:
 
 	def __init__(self, cx, cy, hx, hy):
 		self.c = np.array([cx, cy], np.float32)
 		self.h = np.array([hx, hy], np.float32)
+
+# hero.py
 
 class Hero:
 
@@ -34,72 +47,141 @@ class Hero:
 		self.rect = Rect(cx, cy, hx, hy)
 		self.pos = np.array([cx, cy], np.float32)
 		self.vel = np.array([0, 0], np.float32)
+		self.on_ground = False
+		self.is_alive = True
 
-class Edge:
+class Saw:
 
-	def __init__(self, x1, y1, x2, y2):
-		self.shape = shapes.Line(x1, y1, x2, y2)
-		self.line = Line(x1, y1, x2, y2)
+	def __init__(self, cx, cy, r):
+		self.shape = shapes.Circle(cx, cy, r)
+		self.circ = Circ(cx, cy, r)
+
+# plat.py
+
+class HorLinePlat:
+
+	def __init__(self, x1, x2, y):
+		self.shape = shapes.Line(x1, y, x2, y)
+		cx = (x1 + x2) / 2
+		hx = abs((x2 - x1) / 2)
+		self.line = HorLine(cx, y, hx)
+
+class VertLinePlat:
+
+	def __init__(self, x, y1, y2):
+		self.shape = shapes.Line(x, y1, x, y2)
+		cy = (y1 + y2) / 2
+		hx = abs((y2 - y1) / 2)
+		self.line = VertLine(x, cy, hy)
 
 wnd = pyglet.window.Window(500, 500)
 keys = key.KeyStateHandler()
 wnd.push_handlers(keys)
 hero = Hero(15, 15, 15, 15)
-edges = [
-	Edge(0, 0, 500, 0),
-	Edge(250, 100, 500, 100),
+enemies = [
+	Saw(200, 0, 50)
+]
+plats = [
+	HorLinePlat(0, 500, 0),
+	HorLinePlat(250, 500, 100)
 ]
 
+def closest_on_rect_to_circ(rect, circ):
+	rect_min_x = rect.c[0] - rect.h[0]
+	rect_min_y = rect.c[1] - rect.h[1]
+	rect_max_x = rect.c[0] + rect.h[0]
+	rect_max_y = rect.c[1] + rect.h[1]
+	return np.array([
+		np.clip(circ.c[0], rect_min_x, rect_max_x),
+		np.clip(circ.c[1], rect_min_y, rect_max_y)
+	], np.float32)
+	
+def dist(pt1, pt2):
+	return np.linalg.norm(pt2 - pt1)
+
+def rect_circ_hit(rect, circ):
+	pt = closest_on_rect_to_circ(rect, circ)
+	return dist(circ.c, pt) < circ.r
+	
 def rect_hor_line_hit(rect, line):
-	line_min_x = min(line.p1[0], line.p2[0])
-	line_max_x = max(line.p1[0], line.p2[0])
-	if rect.c[0] + rect.h[0] <= line_min_x:
+	line_min_x = line.c[0] - line.hx
+	line_max_x = line.c[0] + line.hx
+	rect_min_x = rect.c[0] - rect.h[0]
+	rect_min_y = rect.c[1] - rect.h[1]
+	rect_max_x = rect.c[0] + rect.h[0]
+	rect_max_y = rect.c[1] + rect.h[1]
+	
+	if rect_max_x <= line_min_x:
 		return False
-	if rect.c[0] - rect.h[0] >= line_max_x:
+	if rect_min_x >= line_max_x:
 		return False
-	if rect.c[1] - rect.h[1] >= line.p1[1]:
+	if rect_min_y >= line.c[1]:
 		return False
-	if rect.c[1] + rect.h[1] <= line.p1[1]:
+	if rect_max_y <= line.c[1]:
 		return False
 	return True
 
 def rect_hor_line_sep(rect, line):
-	line_min_x = min(line.p1[0], line.p2[0])
-	line_max_x = max(line.p1[0], line.p2[0])
-	dist = [
-		(rect.c[0] + rect.h[0]) - line_min_x,
-		line_max_x - (rect.c[0] - rect.h[0]),
-		line.p1[1] - (rect.c[1] - rect.h[1]),
-		(rect.c[1] + rect.h[1]) - line.p1[1]
-	]
-	direct = [left, right, up, down]
-	min_dist = min(dist)
-	min_direct = direct[dist.index(min_dist)]
+	line_min_x = line.c[0] - line.hx
+	line_max_x = line.c[0] + line.hx
+	rect_min_x = rect.c[0] - rect.h[0]
+	rect_min_y = rect.c[1] - rect.h[1]
+	rect_max_x = rect.c[0] + rect.h[0]
+	rect_max_y = rect.c[1] + rect.h[1]
+	min_dist = math.inf
+
+	dist = rect_max_x - line_min_x
+	if dist < min_dist:
+		min_dist = dist
+		min_direct = left
+
+	dist = line_max_x - rect_min_x
+	if dist < min_dist:
+		min_dist = dist
+		min_direct = right
+
+	dist = line.c[1] - rect_min_y
+	if dist < min_dist:
+		min_dist = dist
+		min_direct = up
+	
+	dist = rect_max_y - line.c[1]
+	if dist < min_dist:
+		min_dist = dist
+		min_direct = down
+
 	return min_dist, min_direct
 
-@wnd.event
-def on_draw():
-	global x, y
-	wnd.clear()
+def step(dt):
 
+	if not hero.is_alive:
+		return
+
+	hero.vel[0] = 0
 	if keys[key.A]:
-		hero.rect.c[0] -= 3
+		hero.vel[0] = -400
 	if keys[key.D]:
-		hero.rect.c[0] += 3
-	if keys[key.W] and hero.vel[1] == 0:
-		hero.vel[1] = 14
+		hero.vel[0] = 400
+	if keys[key.W] and hero.on_ground:
+		hero.vel[1] = 1300
 
-	hero.vel[1] -= 1
-	hero.rect.c[1] += hero.vel[1]
+	hero.vel[1] -= 18
+	hero.rect.c += hero.vel * dt
 
+	for enemy in enemies:
+		if type(enemy) is Saw:
+			if rect_circ_hit(hero.rect, enemy.circ):
+				hero.is_alive = False
+
+	hero.on_ground = False
 	for i in range(0, 10):
 		min_dist = math.inf
 		min_direct = None
-		for edge in edges:
+		for plat in plats:
 			dist = None
-			if edge.line.is_hor():
-				if rect_hor_line_hit(hero.rect, edge.line):
-					dist, direct = rect_hor_line_sep(hero.rect, edge.line)
+			if type(plat) is HorLinePlat:
+				if rect_hor_line_hit(hero.rect, plat.line):
+					dist, direct = rect_hor_line_sep(hero.rect, plat.line)
 			if dist is not None:
 				if dist < min_dist:
 					min_dist = dist
@@ -109,12 +191,27 @@ def on_draw():
 		hero.rect.c += min_dist * min_direct
 		if (min_direct == left).all() or (min_direct == right).all():
 			hero.vel[0] = 0
-		if (min_direct == up).all() or (min_direct == down).all():
+		if (min_direct == up).all():
+			if hero.vel[1] <= 0:
+				hero.on_ground = True
+			hero.vel[1] = 0
+		if (min_direct == down).all():
 			hero.vel[1] = 0
 
+@wnd.event
+def on_draw():
+	wnd.clear()
+
+	dt = (1 / 60) / 5
+	for i in range(0, 5):
+		step(dt)
+
 	hero.shape.position = hero.rect.c - hero.rect.h
-	hero.shape.draw()
-	for edge in edges:
-		edge.shape.draw()
+	if hero.is_alive:
+		hero.shape.draw()
+	for enemy in enemies:
+		enemy.shape.draw()
+	for plat in plats:
+		plat.shape.draw()
 
 pyglet.app.run()

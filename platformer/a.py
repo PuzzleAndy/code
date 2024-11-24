@@ -1,11 +1,23 @@
+# License: CC0
+# https://puzzleandy.com
+
+# pip install numpy
+# pip install pyglet
+
+import numpy as np
 import pyglet
 from pyglet import shapes
-import numpy as np
 import ctypes
 from pyglet.window import key
 import math
 
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
+
+def perp(v):
+	return (v[1], -v[0])
+
+def norm(v):
+	return v / np.linalg.norm(v)
 
 left = np.array([-1, 0], np.float32)
 right = np.array([1, 0], np.float32)
@@ -38,6 +50,19 @@ class Rect:
 		self.c = np.array([cx, cy], np.float32)
 		self.h = np.array([hx, hy], np.float32)
 
+	def p(self):
+		return [
+			self.c + (-self.h[0], -self.h[1]),
+			self.c + (self.h[0], -self.h[1]),
+			self.c + (self.h[0], self.h[1]),
+			self.c + (-self.h[0], self.h[1])
+		]
+
+class Tri:
+
+	def __init__(self, x1, y1, x2, y2, x3, y3):
+		self.p = np.array([(x1, y1), (x2, y2), (x3, y3)], np.float32)
+
 # hero.py
 
 class Hero:
@@ -55,6 +80,12 @@ class Saw:
 	def __init__(self, cx, cy, r):
 		self.shape = shapes.Circle(cx, cy, r)
 		self.circ = Circ(cx, cy, r)
+
+class Spike:
+
+	def __init__(self, x1, y1, x2, y2, x3, y3):
+		self.shape = shapes.Triangle(x1, y1, x2, y2, x3, y3)
+		self.tri = Tri(x1, y1, x2, y2, x3, y3)
 
 # plat.py
 
@@ -79,12 +110,43 @@ keys = key.KeyStateHandler()
 wnd.push_handlers(keys)
 hero = Hero(15, 15, 15, 15)
 enemies = [
-	Saw(200, 0, 50)
+	Saw(200, 0, 50),
+	Spike(420, 100, 440, 100, 430, 130)
 ]
 plats = [
 	HorLinePlat(0, 500, 0),
 	HorLinePlat(250, 500, 100)
 ]
+
+class Proj:
+
+	def __init__(self, p, axis):
+		self.mini = math.inf
+		self.maxi = -math.inf
+		for i in range(len(p)):
+			proj = p[i].dot(axis)
+			self.mini = min(proj, self.mini)
+			self.maxi = max(proj, self.maxi)
+
+def projs_overlap(proj1, proj2):
+	if proj1.maxi < proj2.mini:
+		return False
+	if proj1.mini > proj2.maxi:
+		return False
+	return True
+
+def rect_tri_hit(rect, tri):
+	axes = np.empty((5, 2), np.float32)
+	axes[0] = (1, 0)
+	axes[1] = (0, 1)
+	for i in range(3):
+		axes[i + 2] = perp(norm(tri.p[(i + 1) % 3] - tri.p[i]))
+	for axis in axes:
+		rect_proj = Proj(rect.p(), axis)
+		tri_proj = Proj(tri.p, axis)
+		if not projs_overlap(rect_proj, tri_proj):
+			return False
+	return True
 
 def closest_on_rect_to_circ(rect, circ):
 	rect_min_x = rect.c[0] - rect.h[0]
@@ -171,6 +233,9 @@ def step(dt):
 	for enemy in enemies:
 		if type(enemy) is Saw:
 			if rect_circ_hit(hero.rect, enemy.circ):
+				hero.is_alive = False
+		elif type(enemy) is Spike:
+			if rect_tri_hit(hero.rect, enemy.tri):
 				hero.is_alive = False
 
 	hero.on_ground = False
